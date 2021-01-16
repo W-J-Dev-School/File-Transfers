@@ -15,7 +15,7 @@ void server_save_file_handler(
     assert(file.is_open() && "Output file failed to open!");
 
     content_reader([&](const char *data, size_t data_length) {
-        std::cout << "[SERVER]"
+        std::cout << "[SERVER] "
                   << "Received " << data_length << " bytes" << std::endl;
 
         file.write(data, data_length);
@@ -23,7 +23,7 @@ void server_save_file_handler(
     });
     file.close();
 
-    std::cout << "[SERVER]"
+    std::cout << "[SERVER] "
               << "Receiving done" << std::endl;
 
     res.set_content("Great!", "text/plain");
@@ -67,14 +67,14 @@ void client_proc()
 
             size_t data_length = file.gcount();
 
-            std::cout << "[CLIENT]"
+            std::cout << "[CLIENT] "
                       << "Sending " << data_length << " bytes" << std::endl;
 
             sink.write(data, data_length);
 
             if (file.eof())
             {
-                std::cout << "[CLIENT]"
+                std::cout << "[CLIENT] "
                           << "Sending done" << std::endl;
                 sink.done();
             }
@@ -85,7 +85,7 @@ void client_proc()
 
     file.close();
 
-    std::cout << "[CLIENT]"
+    std::cout << "[CLIENT] "
               << "Response: " << response.value().body << std::endl;
 }
 
