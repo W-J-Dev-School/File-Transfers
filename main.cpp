@@ -15,14 +15,18 @@ void server_save_file_handler(
     assert(file.is_open() && "Output file failed to open!");
 
     content_reader([&](const char *data, size_t data_length) {
-        std::cout << "Received " << data_length << " bytes" << std::endl;
+        std::cout << "[SERVER]"
+                  << "Received " << data_length << " bytes" << std::endl;
 
         file.write(data, data_length);
         return true;
     });
     file.close();
 
-    res.set_content("Great", "text/plain");
+    std::cout << "[SERVER]"
+              << "Receiving done" << std::endl;
+
+    res.set_content("Great!", "text/plain");
 }
 
 void server_proc()
@@ -52,7 +56,7 @@ void client_proc()
     size_t file_size = file.tellg();
     file.seekg(0);
 
-    http_client.Post(
+    httplib::Result response = http_client.Post(
         "/", [&](size_t offset, httplib::DataSink &sink) {
             char data[8192] = {0};
 
@@ -63,10 +67,15 @@ void client_proc()
 
             size_t data_length = file.gcount();
 
+            std::cout << "[CLIENT]"
+                      << "Sending " << data_length << " bytes" << std::endl;
+
             sink.write(data, data_length);
 
             if (file.eof())
             {
+                std::cout << "[CLIENT]"
+                          << "Sending done" << std::endl;
                 sink.done();
             }
 
@@ -75,6 +84,9 @@ void client_proc()
         "application/octet-stream");
 
     file.close();
+
+    std::cout << "[CLIENT]"
+              << "Response: " << response.value().body << std::endl;
 }
 
 int main()
